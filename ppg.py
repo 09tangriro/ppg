@@ -72,7 +72,6 @@ class PPG:
         self.critic.load_state_dict(data['critic'])
 
     def learn(self, memories, aux_memories, next_state):
-        # retrieve and prepare data from memory for training
         states = []
         actions = []
         old_log_probs = []
@@ -85,6 +84,7 @@ class PPG:
             actions.append(torch.tensor(mem.action))
             old_log_probs.append(mem.action_log_prob)
             rewards.append(mem.reward)
+            # invert done for GAE calculations
             masks.append(1 - float(mem.done))
             values.append(mem.value)
 

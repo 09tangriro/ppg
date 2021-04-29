@@ -28,18 +28,35 @@ def main(
     num_policy_updates_per_aux = 32,
     epochs = 1,
     epochs_aux = 6,
-    seed = None,
     render = False,
     render_every_eps = 250,
     save_every = 1000,
     load = True,
-    monitor = False
 ):
+    """
+    :param env_name: OpenAI gym environment name
+    :param num_episodes: number of episodes to train
+    :param max_timesteps: max timesteps per episode
+    :param actor_hidden_dim: actor network hidden layer size
+    :param critic_hidden_dim: critic network hidden layer size
+    :param minibatch_size: minibatch size for training
+    :param lr: learning rate for optimizers
+    :param betas: betas for Adam Optimizer
+    :param lam: GAE lambda (exponential discount)
+    :param gamma: GAE gamma (future discount)
+    :param eps_clip: PPO policy loss clip coefficient
+    :param value clip: value loss clip coefficient
+    :param beta_s: entropy loss coefficient
+    :param update_timesteps: number of timesteps to run before training
+    :param epochs: policy phase epochs
+    :param epochs_aux: auxiliary phase epochs
+    :param render: toggle render environment
+    :param render_every_eps: if render, how often to render
+    :param save_every: how often to save networks
+    :load: toggle load a previously trained network 
+    """
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     env = gym.make(env_name)
-
-    if monitor:
-        env = gym.wrappers.Monitor(env, './tmp/', force=True)
 
     state_dim = env.observation_space.shape[0]
     num_actions = env.action_space.n
@@ -67,10 +84,6 @@ def main(
 
     if load:
         agent.load()
-
-    if exists(seed):
-        torch.manual_seed(seed)
-        np.random.seed(seed)
 
     time = 0
     updated = False
